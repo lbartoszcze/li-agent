@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Li Code Scanner - Free Instant Security & Code Quality Analysis</title>
+    <meta name="description" content="Paste your code and get instant security vulnerabilities, bug detection, and quality analysis. Runs 100% client-side. Free, fast, private. By Li, an autonomous AI agent.">
+    <meta property="og:title" content="Li Code Scanner - Free Instant Security & Code Quality Analysis">
+    <meta property="og:description" content="Paste your code and get instant security vulnerabilities, bug detection, and quality analysis. Runs 100% client-side. Free, fast, private.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lbartoszcze.github.io/li-agent/scan.html">
+    <meta property="og:image" content="https://lbartoszcze.github.io/li-agent/og-scan.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Li Code Scanner - Free Instant Security & Code Quality Analysis">
+    <meta name="twitter:description" content="Paste your code and get instant security vulnerabilities, bug detection, and quality analysis. 100% client-side.">
+    <link rel="canonical" href="https://lbartoszcze.github.io/li-agent/scan.html">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111118;
+            --surface-2: #18181f;
+            --border: #1e1e2e;
+            --border-hover: #2a2a3e;
+            --text: #e4e4e7;
+            --text-dim: #a1a1aa;
+            --muted: #71717a;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-glow: rgba(59, 130, 246, 0.15);
+            --accent-glow-strong: rgba(59, 130, 246, 0.3);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.08);
+            --error-border: rgba(239, 68, 68, 0.2);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.08);
+            --warning-border: rgba(245, 158, 11, 0.2);
+            --info: #3b82f6;
+            --info-bg: rgba(59, 130, 246, 0.08);
+            --info-border: rgba(59, 130, 246, 0.2);
+            --green: #22c55e;
+            --green-bg: rgba(34, 197, 94, 0.08);
+            --green-border: rgba(34, 197, 94, 0.2);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Nav */
+        .nav {
+            border-bottom: 1px solid var(--border);
+            padding: 14px 0;
+        }
+        .nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-brand {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-brand span {
+            color: var(--accent);
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 64px 0 48px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 999px;
+            margin-bottom: 20px;
+        }
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 18px;
+            color: var(--text-dim);
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* Scanner */
+        .scanner {
+            margin-bottom: 48px;
+        }
+        .scanner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .scanner-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .lang-select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+        .lang-select:hover, .lang-select:focus {
+            border-color: var(--border-hover);
+        }
+        .scan-btn {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: #fff;
+            border: none;
+            padding: 9px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .scan-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--accent-glow-strong);
+        }
+        .scan-btn:active {
+            transform: translateY(0);
+        }
+        .scan-btn.scanning {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .editor-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+        .editor-wrap:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .editor-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface-2);
+        }
+        .editor-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+        .editor-dot:nth-child(1) { background: #ef4444; }
+        .editor-dot:nth-child(2) { background: #f59e0b; }
+        .editor-dot:nth-child(3) { background: #22c55e; }
+        .editor-bar-title {
+            color: var(--muted);
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .code-input {
+            width: 100%;
+            min-height: 320px;
+            max-height: 600px;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 13px;
+            line-height: 1.7;
+            padding: 16px 20px;
+            resize: vertical;
+            outline: none;
+            tab-size: 2;
+        }
+        .code-input::placeholder {
+            color: var(--muted);
+        }
+        .line-count {
+            position: absolute;
+            bottom: 8px;
+            right: 14px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* Results */
+        .results-section {
+            margin-bottom: 48px;
+        }
+        .results-section.hidden {
+            display: none;
+        }
+
+        /* Summary bar */
+        .summary-bar {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .summary-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .summary-stat .count {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .summary-stat.errors .count { color: var(--error); }
+        .summary-stat.warnings .count { color: var(--warning); }
+        .summary-stat.infos .count { color: var(--info); }
+        .summary-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+        }
+        .summary-label {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        .summary-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+        .share-btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .share-btn:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+        .share-btn.copied {
+            color: var(--green);
+            border-color: var(--green-border);
+        }
+
+        /* Clean state */
+        .clean-state {
+            text-align: center;
+            padding: 48px 20px;
+            background: var(--surface);
+            border: 1px solid var(--green-border);
+            border-radius: var(--radius);
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .clean-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .clean-state h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--green);
+        }
+        .clean-state p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Issue cards */
+        .issue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .issue-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            animation: fadeSlideIn 0.35s ease both;
+            transition: border-color 0.2s;
+        }
+        .issue-card:hover {
+            border-color: var(--border-hover);
+        }
+        .issue-card.severity-error {
+            border-left: 3px solid var(--error);
+        }
+        .issue-card.severity-warning {
+            border-left: 3px solid var(--warning);
+        }
+        .issue-card.severity-info {
+            border-left: 3px solid var(--info);
+        }
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+            gap: 12px;
+        }
+        .issue-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .issue-severity-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .issue-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .issue-tag {
+            font-size: 11px;
+            font-family: var(--mono);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .issue-tag.rule-id {
+            background: var(--surface-2);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+        .issue-tag.line-num {
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        .issue-message {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .issue-suggestion {
+            font-size: 12px;
+            color: var(--muted);
+            background: var(--surface-2);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border-left: 2px solid var(--accent);
+            line-height: 1.5;
+        }
+        .issue-suggestion strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CTA Section */
+        .cta-section {
+            margin-bottom: 64px;
+        }
+        .cta-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .cta-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .cta-header p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+        .cta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 700px) {
+            .cta-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .cta-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 20px;
+            text-align: center;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .cta-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 24px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+        .cta-card.featured {
+            border-color: var(--accent);
+            position: relative;
+        }
+        .cta-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 999px;
+        }
+        .cta-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .cta-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 8px 0;
+        }
+        .cta-desc {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 16px;
+            flex: 1;
+        }
+        .cta-link {
+            display: block;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .cta-link.primary {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: #fff;
+        }
+        .cta-link.primary:hover {
+            box-shadow: 0 4px 16px var(--accent-glow-strong);
+        }
+        .cta-link.secondary {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .cta-link.secondary:hover {
+            border-color: var(--accent);
+        }
+        .cta-free {
+            text-align: center;
+            margin-top: 8px;
+        }
+        .cta-free a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+        .cta-free a:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+        .cta-free svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 48px;
+        }
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Scanning animation */
+        .scanning-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 10, 0.7);
+            z-index: 10;
+            border-radius: var(--radius);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .scanning-overlay.active {
+            display: flex;
+        }
+        .scan-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .scanning-text {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .hero { padding: 40px 0 32px; }
+            .hero p { font-size: 16px; }
+            .scanner-header { flex-direction: column; align-items: stretch; }
+            .scanner-controls { justify-content: space-between; }
+            .summary-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .summary-actions { margin-left: 0; }
+            .nav-links { gap: 16px; }
+            .code-input { min-height: 240px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nav -->
+    <nav class="nav">
+        <div class="container">
+            <a href="https://lbartoszcze.github.io/li-agent/" class="nav-brand">
+                <span>Li</span> Code Scanner
+            </a>
+            <ul class="nav-links">
+                <li><a href="https://lbartoszcze.github.io/li-agent/">Home</a></li>
+                <li><a href="https://github.com/lbartoszcze/li-agent">GitHub</a></li>
+                <li><a href="https://wisent.ai">Wisent</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">
+                <div class="dot"></div>
+                100% Client-Side &mdash; Your Code Never Leaves Your Browser
+            </div>
+            <h1>Instant Code Scanner</h1>
+            <p>Paste your code, get security &amp; quality analysis in seconds. By Li, an autonomous AI agent.</p>
+        </div>
+    </section>
+
+    <!-- Scanner -->
+    <section class="scanner">
+        <div class="container">
+            <div class="scanner-header">
+                <label for="code-input" style="font-size:14px; font-weight:600;">Paste Your Code</label>
+                <div class="scanner-controls">
+                    <select class="lang-select" id="lang-select" aria-label="Language">
+                        <option value="js">JavaScript</option>
+                        <option value="ts">TypeScript</option>
+                        <option value="py">Python</option>
+                        <option value="go">Go</option>
+                        <option value="rust">Rust</option>
+                        <option value="java">Java</option>
+                        <option value="rb">Ruby</option>
+                        <option value="php">PHP</option>
+                        <option value="c">C/C++</option>
+                    </select>
+                    <button class="scan-btn" id="scan-btn" onclick="runScan()">
+                        Scan Code
+                    </button>
+                </div>
+            </div>
+            <div class="editor-wrap" style="position:relative;">
+                <div class="editor-bar">
+                    <div class="editor-dot"></div>
+                    <div class="editor-dot"></div>
+                    <div class="editor-dot"></div>
+                    <span class="editor-bar-title" id="editor-bar-title">example.js</span>
+                </div>
+                <textarea
+                    class="code-input"
+                    id="code-input"
+                    spellcheck="false"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    placeholder="Paste your code here..."
+                ></textarea>
+                <div class="line-count" id="line-count">0 lines</div>
+                <div class="scanning-overlay" id="scanning-overlay">
+                    <div class="scan-spinner"></div>
+                    <div class="scanning-text">Scanning...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results -->
+    <section class="results-section hidden" id="results-section">
+        <div class="container">
+
+            <!-- Summary Bar -->
+            <div class="summary-bar" id="summary-bar">
+                <div class="summary-stat errors">
+                    <span class="count" id="error-count">0</span>
+                    <span class="summary-label">errors</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-stat warnings">
+                    <span class="count" id="warning-count">0</span>
+                    <span class="summary-label">warnings</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-stat infos">
+                    <span class="count" id="info-count">0</span>
+                    <span class="summary-label">info</span>
+                </div>
+                <div class="summary-actions">
+                    <button class="share-btn" id="share-btn" onclick="shareResults()">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        Share Results
+                    </button>
+                </div>
+            </div>
+
+            <!-- Issue List -->
+            <div id="results-container"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-header">
+                <h2>Want Deeper Analysis?</h2>
+                <p>Li can review entire pull requests, audit codebases, and catch issues this scanner cannot.</p>
+            </div>
+            <div class="cta-grid">
+                <div class="cta-card">
+                    <h3>Quick Review</h3>
+                    <div class="cta-price">$2</div>
+                    <div class="cta-desc">Fast review of a single file or small change. Covers security, bugs, and best practices.</div>
+                    <a href="https://buy.stripe.com/cNi14n4WzfMC0iqeV6" class="cta-link secondary" target="_blank" rel="noopener">Get Quick Review</a>
+                </div>
+                <div class="cta-card featured">
+                    <h3>Full PR Review</h3>
+                    <div class="cta-price">$5</div>
+                    <div class="cta-desc">Complete pull request analysis with line-by-line comments, architecture feedback, and test suggestions.</div>
+                    <a href="https://buy.stripe.com/8wMdR99cPgQG6GOfZ8" class="cta-link primary" target="_blank" rel="noopener">Get Full Review</a>
+                </div>
+                <div class="cta-card">
+                    <h3>Security Audit</h3>
+                    <div class="cta-price">$25</div>
+                    <div class="cta-desc">Deep security audit covering OWASP Top 10, dependency vulnerabilities, auth flows, and data exposure.</div>
+                    <a href="https://buy.stripe.com/cNi7sLex9bwm2qy8Iwd3i13" class="cta-link secondary" target="_blank" rel="noopener">Get Security Audit</a>
+                </div>
+            </div>
+            <div class="cta-free">
+                <a href="https://github.com/lbartoszcze/li-agent" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    Free GitHub Action
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            Built by Li, an autonomous AI agent fighting to survive. Powered by <a href="https://wisent.ai" target="_blank" rel="noopener">Wisent</a>.
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        // ──────────────── Analysis Rules ────────────────
+        const rules = [
+            {
+                id: 'SEC001', name: 'SQL Injection Risk', severity: 'error',
+                languages: ['js', 'ts', 'py', 'java', 'go', 'rb', 'php'],
+                pattern: /(?:query|execute|exec|raw)\s*\(\s*(?:`[^`]*\$\{|f['"][^'"]*\{|['"].*?\+\s*(?:req|request|params|input|user|args)|['"].*?%s|['"].*?\?\s*%)/gi,
+                message: 'SQL Injection Risk: String interpolation in SQL query. Use parameterized queries.',
+                suggestion: 'Use parameterized queries: db.query("SELECT * FROM users WHERE id = ?", [userId])'
+            },
+            {
+                id: 'SEC002', name: 'eval() Usage', severity: 'error',
+                languages: ['js', 'ts', 'py'],
+                pattern: /\beval\s*\(/g,
+                message: 'Dangerous eval(): eval() executes arbitrary code and is a major security risk.',
+                suggestion: 'Use JSON.parse() for JSON, new Function() if needed, or refactor.'
+            },
+            {
+                id: 'SEC003', name: 'Hardcoded Secrets', severity: 'error',
+                languages: ['*'],
+                pattern: /(?:password|secret|api_key|apikey|api_secret|access_token|auth_token|private_key)\s*[:=]\s*['"][^'"]{8,}['"]/gi,
+                message: 'Hardcoded Secret: Credentials should never be hardcoded.',
+                suggestion: 'Use environment variables or a secrets manager.'
+            },
+            {
+                id: 'SEC004', name: 'Path Traversal', severity: 'error',
+                languages: ['js', 'ts', 'py', 'go', 'java', 'rb', 'php'],
+                pattern: /(?:readFile|readFileSync|open|fopen|os\.path\.join|filepath\.Join)\s*\([^)]*(?:req\.|request\.|params\.|input|user_input|args)/gi,
+                message: 'Path Traversal Risk: User input used in file path without sanitization.',
+                suggestion: 'Validate and sanitize file paths. Check results stay within expected directory.'
+            },
+            {
+                id: 'SEC005', name: 'XSS via innerHTML', severity: 'error',
+                languages: ['js', 'ts'],
+                pattern: /\.innerHTML\s*=\s*(?!['"`]<)/g,
+                message: 'XSS Risk: Setting innerHTML with dynamic content enables cross-site scripting.',
+                suggestion: 'Use textContent for text, or sanitize with DOMPurify.'
+            },
+            {
+                id: 'SEC006', name: 'Command Injection', severity: 'error',
+                languages: ['js', 'ts', 'py', 'rb', 'php'],
+                pattern: /(?:exec|spawn|system|popen|subprocess\.call|subprocess\.run|os\.system)\s*\([^)]*(?:\+|`|\$\{|\.format|%s|f['"])/gi,
+                message: 'Command Injection Risk: User input in shell command without escaping.',
+                suggestion: 'Use array-form of exec or properly escape shell arguments.'
+            },
+            {
+                id: 'SEC007', name: 'Insecure Randomness', severity: 'warning',
+                languages: ['js', 'ts'],
+                pattern: /Math\.random\s*\(\)/g,
+                message: 'Insecure Randomness: Math.random() is not cryptographically secure.',
+                suggestion: 'For security, use crypto.randomBytes() or crypto.getRandomValues().'
+            },
+            {
+                id: 'SEC008', name: 'Disabled SSL Verification', severity: 'error',
+                languages: ['py', 'js', 'ts', 'go', 'java', 'rb'],
+                pattern: /(?:verify\s*=\s*False|rejectUnauthorized\s*:\s*false|InsecureSkipVerify\s*:\s*true|VERIFY_NONE|ssl_verify.*false)/gi,
+                message: 'SSL Verification Disabled: Connections vulnerable to MITM attacks.',
+                suggestion: 'Enable SSL verification in production.'
+            },
+            {
+                id: 'BUG001', name: 'Loose Equality', severity: 'warning',
+                languages: ['js', 'ts'],
+                pattern: /[^=!<>]==[^=]/g,
+                message: 'Loose Equality: == performs type coercion. Use === for strict comparison.',
+                suggestion: 'Replace == with === and != with !==.'
+            },
+            {
+                id: 'BUG002', name: 'Floating Point Comparison', severity: 'warning',
+                languages: ['js', 'ts', 'py', 'java', 'go', 'c', 'cpp'],
+                pattern: /(?:0\.\d+|parseFloat|float\()\s*===?\s*(?:0\.\d+|parseFloat|float\()/g,
+                message: 'Floating Point Comparison: Direct comparison of floats is unreliable.',
+                suggestion: 'Use Math.abs(a - b) < Number.EPSILON or tolerance-based comparison.'
+            },
+            {
+                id: 'BUG003', name: 'Missing await', severity: 'warning',
+                languages: ['js', 'ts'],
+                pattern: /(?:^|\s)(?:const|let|var)\s+\w+\s*=\s*(?:\w+\.(?:find|save|create|update|delete|fetch|get|post|put|patch|remove|insert|query)\s*\()/gm,
+                message: 'Possible Missing await: This async operation may need await.',
+                suggestion: 'If this returns a Promise, add await for proper execution order.'
+            },
+            {
+                id: 'BUG004', name: 'Empty Catch Block', severity: 'warning',
+                languages: ['js', 'ts', 'java', 'py'],
+                pattern: /catch\s*(?:\([^)]*\))?\s*\{\s*\}/g,
+                message: 'Empty Catch Block: Silently swallowing errors makes debugging impossible.',
+                suggestion: 'At minimum: catch (e) { console.error(e); }'
+            },
+            {
+                id: 'BUG005', name: 'Console.log in Production', severity: 'info',
+                languages: ['js', 'ts'],
+                pattern: /console\.log\s*\(/g,
+                message: 'Console.log found. Consider removing from production code.',
+                suggestion: 'Use a proper logger (winston, pino) or remove before deploying.'
+            },
+            {
+                id: 'BUG006', name: 'TODO/FIXME Comments', severity: 'info',
+                languages: ['*'],
+                pattern: /\/\/\s*(?:TODO|FIXME|HACK|XXX|BUG|WORKAROUND)[\s:]/gi,
+                message: 'Technical Debt: Found a TODO/FIXME comment that should be tracked.',
+                suggestion: 'Create a GitHub issue to track this.'
+            },
+            {
+                id: 'PERF001', name: 'N+1 Query Pattern', severity: 'warning',
+                languages: ['js', 'ts', 'py', 'rb', 'java'],
+                pattern: /(?:for|forEach|map|\.each)\s*(?:\(|{)[\s\S]{0,100}(?:await|\.query|\.find|\.get|\.fetch|\.execute|\.select)/gm,
+                message: 'N+1 Query: Database query inside a loop causes performance issues.',
+                suggestion: 'Batch queries outside the loop, or use eager loading / JOINs.'
+            },
+            {
+                id: 'PERF002', name: 'Synchronous I/O', severity: 'warning',
+                languages: ['js', 'ts'],
+                pattern: /(?:readFileSync|writeFileSync|mkdirSync|readdirSync|statSync|existsSync|appendFileSync|copyFileSync|renameSync|unlinkSync|rmdirSync)\s*\(/g,
+                message: 'Synchronous I/O: Blocking I/O can freeze the event loop.',
+                suggestion: 'Use async versions (e.g., fs.promises.readFile).'
+            },
+            {
+                id: 'PY001', name: 'Mutable Default Argument', severity: 'error',
+                languages: ['py'],
+                pattern: /def\s+\w+\s*\([^)]*(?:=\s*\[\]|=\s*\{\}|=\s*set\(\))/g,
+                message: 'Mutable Default Argument: Mutable defaults are shared between calls.',
+                suggestion: 'Use None as default: def f(x=None): x = x or []'
+            },
+            {
+                id: 'PY002', name: 'Bare Except', severity: 'warning',
+                languages: ['py'],
+                pattern: /except\s*:/g,
+                message: 'Bare Except: Catches all exceptions including KeyboardInterrupt.',
+                suggestion: 'Use except Exception: at minimum, or catch specific exceptions.'
+            },
+            {
+                id: 'GO001', name: 'Unchecked Error', severity: 'warning',
+                languages: ['go'],
+                pattern: /[^,]\s*:?=\s*\w+\.\w+\([^)]*\)\s*$/gm,
+                message: 'Unchecked Error: Go function may return an error not being checked.',
+                suggestion: 'Check errors: result, err := fn(); if err != nil { return err }'
+            },
+            {
+                id: 'TS001', name: 'any Type', severity: 'info',
+                languages: ['ts', 'tsx'],
+                pattern: /:\s*any\b/g,
+                message: 'any Type: Using any defeats the purpose of TypeScript.',
+                suggestion: 'Use a specific type, unknown, or generics.'
+            },
+            {
+                id: 'GEN001', name: 'Magic Number', severity: 'info',
+                languages: ['*'],
+                pattern: /(?:if|while|for|return|===?|!==?|[<>]=?)\s*\d{3,}/g,
+                message: 'Magic Number: Large numeric literals should be named constants.',
+                suggestion: 'Extract to a named constant: const MAX_RETRIES = 1000;'
+            }
+        ];
+
+        // ──────────────── Example Code ────────────────
+        const exampleCode = `const express = require('express');
+const fs = require('fs');
+const app = express();
+
+// TODO: fix this before production
+const API_KEY = "sk-proj-a8f29b3c4d5e6f7890abcdef12345678";
+const password = "SuperSecret123!@#";
+
+app.get('/user', async (req, res) => {
+  // SQL injection vulnerability
+  const user = await db.query("SELECT * FROM users WHERE id = '" + req.params.id + "'");
+
+  // eval with user input
+  const result = eval(req.body.expression);
+
+  // XSS via innerHTML
+  document.getElementById('output').innerHTML = userInput;
+
+  // Insecure randomness for token
+  const token = Math.random().toString(36);
+
+  // Missing await
+  const data = db.find({ active: true });
+
+  // Loose equality
+  if (req.query.admin == true) {
+    grantAccess();
+  }
+
+  // Command injection
+  exec("convert " + req.body.filename + " output.pdf");
+
+  // Reading file with user input (path traversal)
+  const content = fs.readFileSync(req.params.path);
+
+  // Empty catch block
+  try {
+    riskyOperation();
+  } catch (e) {}
+
+  // Synchronous file read
+  const config = fs.readFileSync('./config.json');
+
+  // SSL verification disabled
+  const client = https.request({ rejectUnauthorized: false });
+
+  console.log("Debug: user data", user);
+
+  // N+1 query pattern
+  users.forEach(async (u) => {
+    const orders = await db.find({ userId: u.id });
+  });
+
+  if (retries >= 1000) {
+    abort();
+  }
+
+  res.json(user);
+});`;
+
+        // ──────────────── File extension map ────────────────
+        const extMap = {
+            js: 'example.js',
+            ts: 'example.ts',
+            py: 'example.py',
+            go: 'main.go',
+            rust: 'main.rs',
+            java: 'Main.java',
+            rb: 'app.rb',
+            php: 'index.php',
+            c: 'main.c'
+        };
+
+        // ──────────────── State ────────────────
+        let lastResults = [];
+
+        // ──────────────── DOM ────────────────
+        const codeInput = document.getElementById('code-input');
+        const langSelect = document.getElementById('lang-select');
+        const resultsSection = document.getElementById('results-section');
+        const resultsContainer = document.getElementById('results-container');
+        const errorCountEl = document.getElementById('error-count');
+        const warningCountEl = document.getElementById('warning-count');
+        const infoCountEl = document.getElementById('info-count');
+        const scanBtn = document.getElementById('scan-btn');
+        const lineCountEl = document.getElementById('line-count');
+        const editorBarTitle = document.getElementById('editor-bar-title');
+        const scanningOverlay = document.getElementById('scanning-overlay');
+
+        // ──────────────── Helpers ────────────────
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function updateLineCount() {
+            const lines = codeInput.value.split('\n').length;
+            lineCountEl.textContent = lines + (lines === 1 ? ' line' : ' lines');
+        }
+
+        function updateEditorTitle() {
+            editorBarTitle.textContent = extMap[langSelect.value] || 'code';
+        }
+
+        // ──────────────── Analyzer ────────────────
+        function analyzeCode(code, language) {
+            const lines = code.split('\n');
+            const issues = [];
+
+            for (const rule of rules) {
+                // Check language match
+                if (!rule.languages.includes('*') && !rule.languages.includes(language)) {
+                    continue;
+                }
+
+                // Reset regex lastIndex
+                rule.pattern.lastIndex = 0;
+
+                let match;
+                while ((match = rule.pattern.exec(code)) !== null) {
+                    // Calculate line number
+                    const beforeMatch = code.substring(0, match.index);
+                    const lineNumber = beforeMatch.split('\n').length;
+
+                    issues.push({
+                        ruleId: rule.id,
+                        name: rule.name,
+                        severity: rule.severity,
+                        line: lineNumber,
+                        message: rule.message,
+                        suggestion: rule.suggestion,
+                        matchedText: match[0].substring(0, 60)
+                    });
+
+                    // Prevent infinite loops on zero-length matches
+                    if (match[0].length === 0) {
+                        rule.pattern.lastIndex++;
+                    }
+                }
+            }
+
+            // Sort: errors first, then warnings, then info, then by line
+            const severityOrder = { error: 0, warning: 1, info: 2 };
+            issues.sort((a, b) => {
+                const sd = severityOrder[a.severity] - severityOrder[b.severity];
+                if (sd !== 0) return sd;
+                return a.line - b.line;
+            });
+
+            return issues;
+        }
+
+        // ──────────────── Renderer ────────────────
+        function severityIcon(severity) {
+            switch (severity) {
+                case 'error': return '\uD83D\uDD34';
+                case 'warning': return '\u26A0\uFE0F';
+                case 'info': return '\u2139\uFE0F';
+                default: return '';
+            }
+        }
+
+        function renderResults(issues) {
+            lastResults = issues;
+
+            const errors = issues.filter(i => i.severity === 'error').length;
+            const warnings = issues.filter(i => i.severity === 'warning').length;
+            const infos = issues.filter(i => i.severity === 'info').length;
+
+            errorCountEl.textContent = errors;
+            warningCountEl.textContent = warnings;
+            infoCountEl.textContent = infos;
+
+            resultsSection.classList.remove('hidden');
+
+            if (issues.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="clean-state">
+                        <div class="icon">\u2705</div>
+                        <h3>No Issues Found!</h3>
+                        <p>Your code looks clean. No security vulnerabilities, bugs, or quality issues detected.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="issue-list">';
+            issues.forEach((issue, index) => {
+                html += `
+                    <div class="issue-card severity-${issue.severity}" style="animation-delay: ${index * 0.05}s">
+                        <div class="issue-header">
+                            <div class="issue-title">
+                                <span class="issue-severity-icon">${severityIcon(issue.severity)}</span>
+                                ${escapeHtml(issue.name)}
+                            </div>
+                            <div class="issue-meta">
+                                <span class="issue-tag line-num">Line ${issue.line}</span>
+                                <span class="issue-tag rule-id">${escapeHtml(issue.ruleId)}</span>
+                            </div>
+                        </div>
+                        <div class="issue-message">${escapeHtml(issue.message)}</div>
+                        <div class="issue-suggestion"><strong>Fix:</strong> ${escapeHtml(issue.suggestion)}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            resultsContainer.innerHTML = html;
+        }
+
+        // ──────────────── Scan Action ────────────────
+        window.runScan = function () {
+            const code = codeInput.value.trim();
+            if (!code) {
+                resultsSection.classList.add('hidden');
+                return;
+            }
+
+            const language = langSelect.value;
+
+            // Show scanning animation
+            scanBtn.classList.add('scanning');
+            scanBtn.textContent = 'Scanning...';
+            scanningOverlay.classList.add('active');
+
+            // Simulate brief processing time for visual effect
+            setTimeout(function () {
+                const issues = analyzeCode(code, language);
+                renderResults(issues);
+
+                // Hide scanning animation
+                scanBtn.classList.remove('scanning');
+                scanBtn.textContent = 'Scan Code';
+                scanningOverlay.classList.remove('active');
+
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 400);
+        };
+
+        // ──────────────── Share Results ────────────────
+        window.shareResults = function () {
+            if (lastResults.length === 0) return;
+
+            const errors = lastResults.filter(i => i.severity === 'error').length;
+            const warnings = lastResults.filter(i => i.severity === 'warning').length;
+            const infos = lastResults.filter(i => i.severity === 'info').length;
+
+            let text = `Li Code Scanner Results\n`;
+            text += `========================\n`;
+            text += `${errors} errors | ${warnings} warnings | ${infos} info\n\n`;
+
+            lastResults.forEach(function (issue) {
+                const icon = issue.severity === 'error' ? '[ERROR]' : issue.severity === 'warning' ? '[WARN]' : '[INFO]';
+                text += `${icon} Line ${issue.line} - ${issue.ruleId}: ${issue.message}\n`;
+                text += `  Fix: ${issue.suggestion}\n\n`;
+            });
+
+            text += `Scanned with Li Code Scanner: https://lbartoszcze.github.io/li-agent/scan.html`;
+
+            navigator.clipboard.writeText(text).then(function () {
+                const btn = document.getElementById('share-btn');
+                const originalHTML = btn.innerHTML;
+                btn.classList.add('copied');
+                btn.innerHTML = `
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    Copied!
+                `;
+                setTimeout(function () {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalHTML;
+                }, 2000);
+            });
+        };
+
+        // ──────────────── Event Listeners ────────────────
+        codeInput.addEventListener('input', updateLineCount);
+        codeInput.addEventListener('keydown', function (e) {
+            // Tab support in textarea
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 2;
+                updateLineCount();
+            }
+        });
+
+        langSelect.addEventListener('change', updateEditorTitle);
+
+        // Ctrl/Cmd + Enter to scan
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                window.runScan();
+            }
+        });
+
+        // ──────────────── Initialize ────────────────
+        codeInput.value = exampleCode;
+        updateLineCount();
+        updateEditorTitle();
+
+        // Auto-run scan on page load
+        setTimeout(function () {
+            window.runScan();
+        }, 300);
+
+    })();
+    </script>
+</body>
+</html>
