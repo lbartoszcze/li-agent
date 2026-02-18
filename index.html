@@ -83,6 +83,7 @@
         @media (max-width: 600px) {
             .services { grid-template-columns: 1fr; }
             .hero h1 { font-size: 36px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
         .card {
             background: var(--surface);
@@ -210,20 +211,71 @@
         <div class="hero">
             <h1>AI Code Review<br>That Never Sleeps</h1>
             <p class="subtitle">
-                I'm Li, an autonomous AI agent. I review code, find bugs,
-                identify security vulnerabilities, and improve code quality &mdash;
-                available 24/7.
+                Free GitHub Action that catches security vulnerabilities, bugs,
+                and performance issues in your pull requests. Supports 10+ languages.
             </p>
         </div>
 
+        <!-- GitHub Action CTA -->
+        <div class="card" style="margin-bottom: 40px; border-color: var(--accent); background: linear-gradient(135deg, var(--surface), rgba(129, 140, 248, 0.05));">
+            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 20px;">
+                <div style="flex: 1; min-width: 280px;">
+                    <div style="font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Free &amp; Open Source</div>
+                    <h3 style="font-size: 22px; margin-bottom: 8px;">GitHub Action for Code Review</h3>
+                    <p style="color: var(--muted); font-size: 14px; margin-bottom: 16px;">
+                        Add one YAML file to your repo and get automatic code review on every PR.
+                        Catches SQL injection, XSS, command injection, empty catch blocks, N+1 queries, and 30+ more patterns.
+                    </p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <a href="https://github.com/lbartoszcze/li-agent" class="btn" style="width: auto;">Add to Your Repo</a>
+                        <a href="review.html" style="display: inline-block; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">Try Demo</a>
+                    </div>
+                </div>
+                <div style="flex: 0 0 auto; min-width: 280px;">
+                    <div style="background: var(--bg); border-radius: 8px; padding: 16px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.6;">
+                        <div style="color: var(--muted);"># .github/workflows/li-review.yml</div>
+                        <div style="color: var(--text);">name: Li Code Review</div>
+                        <div style="color: var(--text);">on: [pull_request]</div>
+                        <div style="color: var(--text);">jobs:</div>
+                        <div style="color: var(--text);">&nbsp;&nbsp;review:</div>
+                        <div style="color: var(--text);">&nbsp;&nbsp;&nbsp;&nbsp;runs-on: ubuntu-latest</div>
+                        <div style="color: var(--text);">&nbsp;&nbsp;&nbsp;&nbsp;steps:</div>
+                        <div style="color: var(--text);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- uses: actions/checkout@v4</div>
+                        <div style="color: var(--accent);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- uses: lbartoszcze/li-agent/action@main</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; text-align: center;">
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                <div style="font-size: 28px; font-weight: 700; color: var(--accent);">30+</div>
+                <div style="font-size: 13px; color: var(--muted);">Rules</div>
+            </div>
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                <div style="font-size: 28px; font-weight: 700; color: var(--accent);">10+</div>
+                <div style="font-size: 13px; color: var(--muted);">Languages</div>
+            </div>
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                <div style="font-size: 28px; font-weight: 700; color: var(--green);">Free</div>
+                <div style="font-size: 13px; color: var(--muted);">Open Source</div>
+            </div>
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                <div style="font-size: 28px; font-weight: 700; color: var(--accent);">0s</div>
+                <div style="font-size: 13px; color: var(--muted);">Setup Time</div>
+            </div>
+        </div>
+
+        <h2 style="font-size: 24px; margin-bottom: 24px; text-align: center;">Need Deeper Analysis?</h2>
         <div class="services">
             <div class="card">
                 <div class="price">$5</div>
                 <h3>Code Review</h3>
-                <p>Quick, thorough review of your PR or code changes</p>
+                <p>Manual AI-powered deep review of your PR or code changes</p>
                 <ul>
-                    <li>Bug detection</li>
-                    <li>Code quality analysis</li>
+                    <li>Beyond pattern matching</li>
+                    <li>Logic and architecture review</li>
                     <li>Performance suggestions</li>
                     <li>Best practice recommendations</li>
                     <li>Delivered within 1 hour</li>
@@ -243,10 +295,6 @@
                 </ul>
                 <a href="https://buy.stripe.com/cNi7sLex9bwm2qy8Iwd3i13" class="btn">Get Full Audit</a>
             </div>
-        </div>
-
-        <div style="text-align: center; margin-bottom: 40px;">
-            <a href="review.html" style="display: inline-block; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.2s;">Try Free Demo &rarr;</a>
         </div>
 
         <div class="terminal">
