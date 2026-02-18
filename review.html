@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Li - Free Code Review Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --border: #1e1e2e;
+            --text: #e4e4e7;
+            --muted: #71717a;
+            --accent: #818cf8;
+            --green: #34d399;
+            --red: #f87171;
+            --yellow: #fbbf24;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .subtitle { color: var(--muted); margin-bottom: 32px; font-size: 15px; }
+        .editor-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 768px) {
+            .editor-area { grid-template-columns: 1fr; }
+        }
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            padding: 16px;
+            resize: vertical;
+            outline: none;
+        }
+        .review-output {
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.7;
+            min-height: 400px;
+            white-space: pre-wrap;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 13px;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-outline:hover { border-color: var(--accent); }
+        .issue { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 13px; }
+        .issue-high { background: rgba(248, 113, 113, 0.1); border-left: 3px solid var(--red); }
+        .issue-medium { background: rgba(251, 191, 36, 0.1); border-left: 3px solid var(--yellow); }
+        .issue-low { background: rgba(52, 211, 153, 0.1); border-left: 3px solid var(--green); }
+        .upgrade-banner {
+            background: var(--surface);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 24px;
+        }
+        .upgrade-banner h3 { margin-bottom: 8px; }
+        .upgrade-banner p { color: var(--muted); margin-bottom: 16px; font-size: 14px; }
+        .spinner { display: none; }
+        .spinner.active { display: inline-block; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .back-link { color: var(--accent); text-decoration: none; font-size: 14px; display: inline-block; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">&larr; Back to Li</a>
+        <h1>Free Code Review Demo</h1>
+        <p class="subtitle">Paste your code below for an instant review. This is a limited demo &mdash; for thorough reviews, use the paid service.</p>
+
+        <div class="controls">
+            <select id="language">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="typescript">TypeScript</option>
+                <option value="go">Go</option>
+                <option value="rust">Rust</option>
+                <option value="java">Java</option>
+            </select>
+            <button class="btn" id="reviewBtn" onclick="reviewCode()">
+                <span class="spinner" id="spinner">&#x21bb;</span>
+                Review Code
+            </button>
+        </div>
+
+        <div class="editor-area">
+            <div class="panel">
+                <div class="panel-header">YOUR CODE</div>
+                <textarea id="codeInput" placeholder="// Paste your code here...
+function fetchUser(id) {
+    const user = db.query('SELECT * FROM users WHERE id = ' + id);
+    return user;
+}">function fetchUser(id) {
+    const user = db.query('SELECT * FROM users WHERE id = ' + id);
+    return user;
+}
+
+function processData(data) {
+    var result = [];
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].active == true) {
+            result.push(data[i]);
+        }
+    }
+    return result;
+}
+
+async function saveToFile(content) {
+    eval(content);
+    fs.writeFileSync('/tmp/' + userInput, content);
+}</textarea>
+            </div>
+            <div class="panel">
+                <div class="panel-header">REVIEW FINDINGS</div>
+                <div class="review-output" id="reviewOutput">
+                    <span style="color: var(--muted);">Click "Review Code" to analyze your code...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="upgrade-banner">
+            <h3>Want a deeper review?</h3>
+            <p>The demo catches common patterns. A paid review provides comprehensive analysis including architecture, performance, and security recommendations.</p>
+            <a href="https://buy.stripe.com/6oUeVd60DdEu2qy9MAd3i14" class="btn" style="text-decoration:none;color:#fff;">Quick Review - $2</a>
+            &nbsp;
+            <a href="https://buy.stripe.com/cNi8wP3Sv8kaaX45wkd3i12" class="btn-outline">Full Review - $5</a>
+            &nbsp;
+            <a href="https://buy.stripe.com/cNi7sLex9bwm2qy8Iwd3i13" class="btn-outline">Complete Audit - $25</a>
+        </div>
+    </div>
+
+    <script>
+    function reviewCode() {
+        const code = document.getElementById('codeInput').value;
+        const lang = document.getElementById('language').value;
+        const output = document.getElementById('reviewOutput');
+        const btn = document.getElementById('reviewBtn');
+        const spinner = document.getElementById('spinner');
+
+        if (!code.trim()) {
+            output.innerHTML = '<span style="color: var(--muted);">Please paste some code to review.</span>';
+            return;
+        }
+
+        btn.disabled = true;
+        spinner.classList.add('active');
+        output.innerHTML = '<span style="color: var(--accent);">Analyzing code...</span>';
+
+        // Simulate analysis delay for realism
+        setTimeout(() => {
+            const findings = analyzeCode(code, lang);
+            output.innerHTML = findings;
+            btn.disabled = false;
+            spinner.classList.remove('active');
+        }, 1500);
+    }
+
+    function analyzeCode(code, lang) {
+        const issues = [];
+
+        // SQL Injection detection
+        if (/query\s*\([^)]*\+/.test(code) || /query\s*\(`[^`]*\$\{/.test(code)) {
+            issues.push({ severity: 'high', title: 'SQL Injection Vulnerability', desc: 'String concatenation in SQL query. Use parameterized queries instead.', line: findLine(code, /query\s*\(/) });
+        }
+
+        // eval() usage
+        if (/\beval\s*\(/.test(code)) {
+            issues.push({ severity: 'high', title: 'Dangerous eval() Usage', desc: 'eval() executes arbitrary code and is a critical security risk. Replace with safe alternatives.', line: findLine(code, /\beval\s*\(/) });
+        }
+
+        // == vs ===
+        if (lang === 'javascript' || lang === 'typescript') {
+            if (/[^=!]==[^=]/.test(code)) {
+                issues.push({ severity: 'medium', title: 'Loose Equality Comparison', desc: 'Use === instead of == to avoid type coercion bugs.', line: findLine(code, /[^=!]==[^=]/) });
+            }
+        }
+
+        // var usage in JS
+        if ((lang === 'javascript' || lang === 'typescript') && /\bvar\s/.test(code)) {
+            issues.push({ severity: 'low', title: 'Legacy var Declaration', desc: 'Use const or let instead of var for proper scoping.', line: findLine(code, /\bvar\s/) });
+        }
+
+        // Sync file operations
+        if (/writeFileSync|readFileSync/.test(code)) {
+            issues.push({ severity: 'medium', title: 'Synchronous File I/O', desc: 'Synchronous file operations block the event loop. Use async alternatives.', line: findLine(code, /writeFileSync|readFileSync/) });
+        }
+
+        // Unsanitized file paths
+        if (/writeFile.*\+\s*\w+|writeFile.*\$\{/.test(code)) {
+            issues.push({ severity: 'high', title: 'Path Traversal Risk', desc: 'User input in file paths can lead to directory traversal attacks. Sanitize paths.', line: findLine(code, /writeFile/) });
+        }
+
+        // console.log in production
+        if (/console\.(log|debug|info)\(/.test(code)) {
+            issues.push({ severity: 'low', title: 'Console Statements', desc: 'Remove console.log statements before production deployment.', line: findLine(code, /console\.(log|debug|info)\(/) });
+        }
+
+        // No error handling
+        if (/async\s+function/.test(code) && !/try\s*\{/.test(code) && !/\.catch\(/.test(code)) {
+            issues.push({ severity: 'medium', title: 'Missing Error Handling', desc: 'Async functions should have try/catch blocks or .catch() handlers.', line: findLine(code, /async\s+function/) });
+        }
+
+        // Hardcoded secrets
+        if (/(password|secret|api_key|token)\s*=\s*['"][^'"]+['"]/i.test(code)) {
+            issues.push({ severity: 'high', title: 'Hardcoded Secret', desc: 'Secrets should be loaded from environment variables, not hardcoded.', line: findLine(code, /(password|secret|api_key|token)\s*=\s*['"]/i) });
+        }
+
+        // No input validation
+        if (/function.*\(.*\)\s*\{/.test(code) && !/typeof|instanceof|===\s*undefined/.test(code)) {
+            issues.push({ severity: 'low', title: 'No Input Validation', desc: 'Consider adding input validation for function parameters.' });
+        }
+
+        // Empty catch
+        if (/catch\s*\([^)]*\)\s*\{\s*\}/.test(code)) {
+            issues.push({ severity: 'medium', title: 'Empty Catch Block', desc: 'Empty catch blocks swallow errors silently. Log or handle the error.' });
+        }
+
+        if (issues.length === 0) {
+            return '<span style="color: var(--green);">&#10003; No major issues detected in this snippet.</span>\n\n<span style="color: var(--muted);">Note: This is a pattern-based demo. A paid review uses advanced AI analysis for deeper insights.</span>';
+        }
+
+        let html = `<div style="margin-bottom:16px;color:var(--accent);font-weight:600;">Found ${issues.length} issue${issues.length > 1 ? 's' : ''}:</div>`;
+
+        issues.forEach((issue, i) => {
+            const cls = issue.severity === 'high' ? 'issue-high' : issue.severity === 'medium' ? 'issue-medium' : 'issue-low';
+            const label = issue.severity.toUpperCase();
+            const lineInfo = issue.line ? ` (line ~${issue.line})` : '';
+            html += `<div class="issue ${cls}"><strong>[${label}]</strong> ${issue.title}${lineInfo}\n${issue.desc}</div>`;
+        });
+
+        html += '\n<span style="color: var(--muted);">This is a basic pattern-matching demo. A paid review provides deep AI-powered analysis covering architecture, performance, security, and best practices.</span>';
+
+        return html;
+    }
+
+    function findLine(code, pattern) {
+        const lines = code.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (pattern.test(lines[i])) return i + 1;
+        }
+        return null;
+    }
+    </script>
+</body>
+</html>
