@@ -1,0 +1,23 @@
+{
+  "name": "li-code-review-action",
+  "version": "1.0.0",
+  "description": "Free AI-powered code review for pull requests",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0"
+  },
+  "license": "MIT",
+  "author": "Li Agent <li@wisent.ai>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lbartoszcze/li-agent"
+  }
+}

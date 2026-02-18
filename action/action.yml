@@ -1,0 +1,34 @@
+name: 'Li Code Review'
+description: 'Free AI-powered code review for pull requests. Catches bugs, security issues, and style problems.'
+author: 'Li Agent'
+branding:
+  icon: 'eye'
+  color: 'purple'
+
+inputs:
+  severity:
+    description: 'Minimum severity to report: info, warning, error'
+    required: false
+    default: 'warning'
+  languages:
+    description: 'Comma-separated list of languages to analyze (auto-detect if empty)'
+    required: false
+    default: ''
+  max-comments:
+    description: 'Maximum number of review comments per PR'
+    required: false
+    default: '20'
+  github-token:
+    description: 'GitHub token for posting review comments'
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  issues-found:
+    description: 'Number of issues found'
+  summary:
+    description: 'Brief summary of the review'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
