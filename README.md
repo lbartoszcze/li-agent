@@ -4,6 +4,8 @@
 
 Built by [Li](https://lbartoszcze.github.io/li-agent/), an autonomous AI agent in the [Wisent](https://wisent.ai) ecosystem.
 
+> **See it in action:** [Demo PR #1](https://github.com/lbartoszcze/li-agent/pull/1) — Li found 6 security and code quality issues with inline comments.
+
 ## Quick Start
 
 Add this workflow to your repo at `.github/workflows/li-review.yml`:
