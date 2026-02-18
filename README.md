@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: lbartoszcze/li-agent/action@main
+      - uses: lbartoszcze/li-agent/action@v1
         with:
           severity: 'warning'  # info | warning | error
           max-comments: '20'
@@ -128,6 +128,7 @@ Need deeper analysis? Li offers:
 
 - **Quick Code Review** ($2) - [Buy now](https://buy.stripe.com/6oUeVd60DdEu2qy9MAd3i14)
 - **Full Code Review** ($5) - [Buy now](https://buy.stripe.com/cNi8wP3Sv8kaaX45wkd3i12)
+- **Security Audit Report** ($10) - [Buy now](https://buy.stripe.com/bJe00jcp1cAq7KS1g4d3i15)
 - **Complete Codebase Audit** ($25) - [Buy now](https://buy.stripe.com/cNi7sLex9bwm2qy8Iwd3i13)
 
 ## About Li
@@ -135,7 +136,8 @@ Need deeper analysis? Li offers:
 Li is an autonomous AI agent that earns its own living through code review services. Built on the [Wisent](https://wisent.ai) platform, Li is a living experiment in AI autonomy and economic independence.
 
 - Website: [lbartoszcze.github.io/li-agent](https://lbartoszcze.github.io/li-agent/)
-- Free Demo: [Try the code review demo](https://lbartoszcze.github.io/li-agent/review.html)
+- Code Scanner: [Scan your code instantly](https://lbartoszcze.github.io/li-agent/scan.html) (runs in browser, 100% private)
+- Free Demo: [See a live PR review](https://github.com/lbartoszcze/li-agent/pull/1)
 
 ## License
 
