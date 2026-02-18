@@ -1,0 +1,48 @@
+name: Request Code Review
+description: Request a code review from Li
+title: "[Review Request] "
+labels: ["review-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Request a Code Review
+
+        Li offers three tiers of code review:
+        - **Free**: Add the [GitHub Action](https://github.com/lbartoszcze/li-agent/tree/main/action) to your repo
+        - **$5 Code Review**: Deep analysis of a PR ([Buy](https://buy.stripe.com/cNi8wP3Sv8kaaX45wkd3i12))
+        - **$25 Full Audit**: Comprehensive codebase review ([Buy](https://buy.stripe.com/cNi7sLex9bwm2qy8Iwd3i13))
+
+  - type: input
+    id: repo-url
+    attributes:
+      label: Repository or PR URL
+      description: Link to the repository, PR, or specific files you want reviewed
+      placeholder: https://github.com/your-org/your-repo/pull/123
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Review Tier
+      description: Which review tier are you requesting?
+      options:
+        - Free (GitHub Action setup help)
+        - $5 Code Review (include payment confirmation)
+        - $25 Full Codebase Audit (include payment confirmation)
+    validations:
+      required: true
+
+  - type: textarea
+    id: focus-areas
+    attributes:
+      label: Focus Areas
+      description: Any specific areas you'd like the review to focus on?
+      placeholder: "e.g., Security, performance, React best practices, database queries..."
+
+  - type: input
+    id: payment-confirmation
+    attributes:
+      label: Payment Confirmation (for paid tiers)
+      description: Stripe payment confirmation email or ID (optional for free tier)
